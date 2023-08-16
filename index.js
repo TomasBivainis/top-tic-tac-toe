@@ -1,7 +1,7 @@
 const gameControler = ((() => {
-  const gameBoard = [['', '', ''], ['', '', ''], ['', '', '']];
+  let gameBoard = [['', '', ''], ['', '', ''], ['', '', '']];
   let isPlayerOneTurn = true;
-  const divGameBoard = document.querySelectorAll('button');
+  const divGameBoard = document.querySelectorAll('.container button');
   const title = document.querySelector('h1');
   const btnRestart = document.querySelector('#restart');
 
@@ -73,6 +73,14 @@ const gameControler = ((() => {
     else title.innerHTML = 'Player 2 turn';
   }
 
+  function restart() {
+    gameBoard = [['', '', ''], ['', '', ''], ['', '', '']];
+    for (let i = 0; i < divGameBoard.length; i += 1) {
+      divGameBoard[i].disabled = false;
+    }
+    displayBoard();
+  }
+
   for (let i = 0; i < gameBoard.length; i += 1) {
     for (let j = 0; j < gameBoard[i].length; j += 1) {
       divGameBoard[i * 3 + j].addEventListener('click', markSpot);
@@ -80,6 +88,14 @@ const gameControler = ((() => {
       divGameBoard[i * 3 + j].y = j;
     }
   }
+
+  for (let i = 0; i < divGameBoard.length; i += 1) {
+    divGameBoard[i].disabled = false;
+  }
+
+  title.innerHTML = 'Player 1 turn';
+
+  btnRestart.addEventListener('click', restart);
 
   displayBoard();
 }));
