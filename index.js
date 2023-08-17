@@ -4,6 +4,10 @@ const gameControler = ((() => {
   const divGameBoard = document.querySelectorAll('.container button');
   const title = document.querySelector('h1');
   const btnRestart = document.querySelector('#restart');
+  const btnStart = document.querySelector('#start');
+  const btnMenu = document.querySelector('#menu');
+  let name1 = 'Player 1';
+  let name2 = 'Player 2';
 
   function displayBoard() {
     for (let i = 0; i < gameBoard.length; i += 1) {
@@ -58,8 +62,8 @@ const gameControler = ((() => {
     const result = checkWin();
 
     if (result === 1) {
-      if (isPlayerOneTurn) title.innerHTML = 'Player 1 wins!';
-      else title.innerHTML = 'Player 2 wins!';
+      if (isPlayerOneTurn) title.innerHTML = `${name1} wins!`;
+      else title.innerHTML = `${name2} wins!`;
       endGame();
       return;
     } if (result === 2) {
@@ -69,8 +73,8 @@ const gameControler = ((() => {
     }
 
     isPlayerOneTurn = !isPlayerOneTurn;
-    if (isPlayerOneTurn) title.innerHTML = 'Player 1 turn';
-    else title.innerHTML = 'Player 2 turn';
+    if (isPlayerOneTurn) title.innerHTML = `${name1} turn`;
+    else title.innerHTML = `${name2} turn`;
   }
 
   function restart() {
@@ -81,6 +85,43 @@ const gameControler = ((() => {
     displayBoard();
   }
 
+  function start() {
+    for (let i = 0; i < divGameBoard.length; i += 1) {
+      divGameBoard[i].disabled = false;
+    }
+
+    for (let i = 0; i < gameBoard.length; i += 1) {
+      gameBoard[i] = ['', '', ''];
+    }
+
+    title.innerHTML = `${name1} turn`;
+
+    btnRestart.addEventListener('click', restart);
+
+    displayBoard();
+  }
+
+  btnStart.addEventListener('click', () => {
+    name1 = document.querySelector('#name1').value;
+    name2 = document.querySelector('#name2').value;
+
+    const divMenu = document.querySelector('#start-menu');
+    divMenu.style.display = 'none';
+
+    const divGame = document.querySelector('#game');
+    divGame.style.display = 'block';
+
+    start();
+  });
+
+  btnMenu.addEventListener('click', () => {
+    const divMenu = document.querySelector('#start-menu');
+    divMenu.style.display = 'block';
+
+    const divGame = document.querySelector('#game');
+    divGame.style.display = 'none';
+  });
+
   for (let i = 0; i < gameBoard.length; i += 1) {
     for (let j = 0; j < gameBoard[i].length; j += 1) {
       divGameBoard[i * 3 + j].addEventListener('click', markSpot);
@@ -88,16 +129,6 @@ const gameControler = ((() => {
       divGameBoard[i * 3 + j].y = j;
     }
   }
-
-  for (let i = 0; i < divGameBoard.length; i += 1) {
-    divGameBoard[i].disabled = false;
-  }
-
-  title.innerHTML = 'Player 1 turn';
-
-  btnRestart.addEventListener('click', restart);
-
-  displayBoard();
 }));
 
 gameControler();

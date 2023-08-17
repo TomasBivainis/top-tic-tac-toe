@@ -9,18 +9,34 @@
   <script src="./index.js" defer></script>
 </head>
 <body>
-  <h1 id="title">Player 1 turn</h1>
-  <div class="container">
-    <button id="1"></button>
-    <button id="2"></button>
-    <button id="3"></button>
-    <button id="4"></button>
-    <button id="5"></button>
-    <button id="6"></button>
-    <button id="7"></button>
-    <button id="8"></button>
-    <button id="9"></button>
+  <div id="start-menu">
+    <div>
+      <label>
+        Player 1 name
+        <input type="text" id="name1" value="Player 1">
+      </label>
+      <label>
+        Player 2 name
+        <input type="text" id="name2" value="Player 2">
+      </label>
+    </div>
+    <button id="start">Start</button>
   </div>
-  <button id="restart">Restart</button>
+  <div id="game">
+    <h1 id="title"></h1>
+    <div class="container">
+      <button id="1"></button>
+      <button id="2"></button>
+      <button id="3"></button>
+      <button id="4"></button>
+      <button id="5"></button>
+      <button id="6"></button>
+      <button id="7"></button>
+      <button id="8"></button>
+      <button id="9"></button>
+    </div>
+    <button id="restart">Restart</button>
+    <button id="menu">Menu</button>
+  </div>
 </body>
 </html>
