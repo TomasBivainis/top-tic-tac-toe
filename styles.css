@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'Roboto';
+  src: url(./fonts/Roboto/Roboto-Regular.ttf);
+  font-weight: normal;
+}
+
 body {
   height: 100vh;
   width: 100vw;
@@ -5,6 +11,8 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin: 0;
+  font-family: 'Roboto';
 }
 
 .container {
@@ -16,6 +24,70 @@ body {
   grid-template-rows: 20vh 20vh 20vh;
 }
 
+button {
+  margin-right: 5px;
+  height: auto;
+  width: auto;
+  padding: 8px;
+  font-size: 15px;
+}
+
+#start-menu {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#start-menu input {
+  margin-top: 5px;
+}
+
+#input {
+  display: flex;
+  justify-content: center;
+}
+
+#input label {
+  margin: 10px;
+}
+
+#start {
+  width: 20%;
+}
+
 #game {
   display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+#game #buttons {
+  margin: 10px;
+}
+
+#game .container {
+  gap: 5px;
+}
+
+#game .container button {
+  border-radius: 0;
+  border-color: black;
+  background-color: white;
+  box-shadow: none;
+}
+
+#game .container button:hover {
+  background-color: #ededed;
+}
+
+#game .container button:active {
+  background-color: #cfcfcf;
 }
