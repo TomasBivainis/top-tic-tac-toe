@@ -25,7 +25,7 @@ body {
 }
 
 button {
-  margin-right: 5px;
+  margin: 5px;
   height: auto;
   width: auto;
   padding: 8px;
@@ -52,7 +52,7 @@ button {
 }
 
 #input label {
-  margin: 10px;
+  margin: 5px;
 }
 
 #start {

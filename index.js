@@ -8,6 +8,7 @@ const gameControler = ((() => {
   const btnMenu = document.querySelector('#menu');
   let name1 = 'Player 1';
   let name2 = 'Player 2';
+  let isSinglePlayer = false;
 
   function displayBoard() {
     for (let i = 0; i < gameBoard.length; i += 1) {
@@ -48,6 +49,27 @@ const gameControler = ((() => {
     }
   }
 
+  function botMarkSpot(x, y) {
+    if (gameBoard[x][y] !== '') return false;
+
+    gameBoard[x][y] = 'O';
+
+    displayBoard();
+
+    const result = checkWin();
+
+    if (result === 1) {
+      if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} wins!`;
+      else labelTitle.innerHTML = `${name2} wins!`;
+      endGame();
+    } if (result === 2) {
+      labelTitle.innerHTML = 'It\'s a tie';
+      endGame();
+    }
+
+    return true;
+  }
+
   function markSpot(evt) {
     const { x } = evt.currentTarget;
     const { y } = evt.currentTarget;
@@ -72,9 +94,22 @@ const gameControler = ((() => {
       return;
     }
 
-    isPlayerOneTurn = !isPlayerOneTurn;
-    if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} turn`;
-    else labelTitle.innerHTML = `${name2} turn`;
+    if (isSinglePlayer) {
+      let i = 0;
+      let j = 0;
+
+      while (!botMarkSpot(i, j)) {
+        i += 1;
+        if (i === 3) {
+          i = 0;
+          j += 1;
+        }
+      }
+    } else {
+      isPlayerOneTurn = !isPlayerOneTurn;
+      if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} turn`;
+      else labelTitle.innerHTML = `${name2} turn`;
+    }
   }
 
   function restart() {
@@ -87,9 +122,10 @@ const gameControler = ((() => {
     displayBoard();
   }
 
-  btnStart.addEventListener('click', () => {
+  function start() {
     name1 = document.querySelector('#name1').value;
     name2 = document.querySelector('#name2').value;
+    isSinglePlayer = document.querySelector('#checkbox').checked;
 
     const divMenu = document.querySelector('#start-menu');
     divMenu.style.display = 'none';
@@ -100,16 +136,18 @@ const gameControler = ((() => {
     labelTitle.innerHTML = `${name1} turn`;
 
     restart();
-  });
+  }
 
-  btnMenu.addEventListener('click', () => {
+  function menu() {
     const divMenu = document.querySelector('#start-menu');
     divMenu.style.display = 'flex';
 
     const divGame = document.querySelector('#game');
     divGame.style.display = 'none';
-  });
+  }
 
+  btnStart.addEventListener('click', start);
+  btnMenu.addEventListener('click', menu);
   btnRestart.addEventListener('click', restart);
 
   for (let i = 0; i < gameBoard.length; i += 1) {
