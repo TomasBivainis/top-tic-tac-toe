@@ -18,19 +18,44 @@ const gameControler = ((() => {
     }
   }
 
+  function checkBotWin(board) {
+    let emptySpaces = 0;
+
+    for (let i = 0; i < board.length; i += 1) {
+      if (board[i][0] === board[i][1] && board[i][1] === board[i][2] && board[i][0] === 'O') return 2;
+    }
+
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[0][j] === board[1][j] && board[1][j] === board[2][j] && board[0][j] === 'O') return 2;
+    }
+
+    if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[1][1] === 'O') return 2;
+    if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && board[1][1] === '0') return 2;
+
+    for (let i = 0; i < board.length; i += 1) {
+      for (let j = 0; j < board[i].length; j += 1) {
+        if (board[i][j] === '') emptySpaces += 1;
+      }
+    }
+
+    if (emptySpaces === 0) { return 1; }
+
+    return 0;
+  }
+
   function checkWin() {
     let emptySpaces = 0;
 
     for (let i = 0; i < gameBoard.length; i += 1) {
-      if (gameBoard[i][0] === gameBoard[i][1] && gameBoard[i][1] === gameBoard[i][2] && gameBoard[i][0] !== '') return 1;
+      if (gameBoard[i][0] === gameBoard[i][1] && gameBoard[i][1] === gameBoard[i][2] && gameBoard[i][0] !== '') return 2;
     }
 
     for (let j = 0; j < gameBoard.length; j += 1) {
-      if (gameBoard[0][j] === gameBoard[1][j] && gameBoard[1][j] === gameBoard[2][j] && gameBoard[0][j] !== '') return 1;
+      if (gameBoard[0][j] === gameBoard[1][j] && gameBoard[1][j] === gameBoard[2][j] && gameBoard[0][j] !== '') return 2;
     }
 
-    if (gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2] && gameBoard[1][1] !== '') return 1;
-    if (gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0] && gameBoard[1][1] !== '') return 1;
+    if (gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2] && gameBoard[1][1] !== '') return 2;
+    if (gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0] && gameBoard[1][1] !== '') return 2;
 
     for (let i = 0; i < gameBoard.length; i += 1) {
       for (let j = 0; j < gameBoard[i].length; j += 1) {
@@ -38,7 +63,7 @@ const gameControler = ((() => {
       }
     }
 
-    if (emptySpaces === 0) { return 2; }
+    if (emptySpaces === 0) { return 1; }
 
     return 0;
   }
@@ -49,20 +74,76 @@ const gameControler = ((() => {
     }
   }
 
-  function botMarkSpot(x, y) {
-    if (gameBoard[x][y] !== '') return false;
+  function getPossibleMoves(board) {
+    const possibleMoves = [];
 
-    gameBoard[x][y] = 'O';
+    for (let i = 0; i < board.length; i += 1) {
+      for (let j = 0; j < board[i].length; j += 1) {
+        if (board[i][j] === '') {
+          possibleMoves.unshift(JSON.parse(JSON.stringify(board)));
+          possibleMoves[0][i][j] = 'O';
+        }
+      }
+    }
+
+    return possibleMoves;
+  }
+
+  function minmax(board, depth, maximizingPlayer) {
+    const possibleMoves = getPossibleMoves(board);
+
+    if (depth === 0 || possibleMoves.length === 0) {
+      return [checkBotWin(board), board];
+    }
+
+    if (maximizingPlayer) {
+      let value = -1;
+
+      for (let i = 0; i < possibleMoves.length; i += 1) {
+        const tmp = minmax(possibleMoves[i], depth - 1, false)[0];
+        if (value < tmp) value = tmp;
+      }
+
+      return [value, board];
+    }
+
+    let value = 3;
+
+    for (let i = 0; i < possibleMoves.length; i += 1) {
+      const tmp = minmax(possibleMoves[i], depth - 1, true)[0];
+
+      if (value > tmp) value = tmp;
+    }
+
+    return [value, board];
+  }
+
+  function getMove(board) {
+    for (let i = 0; i < gameBoard.length; i += 1) {
+      for (let j = 0; j < gameBoard[i].length; j += 1) {
+        if (gameBoard[i][j] !== board[i][j]) return [i, j];
+      }
+    }
+
+    return [0, 0];
+  }
+
+  function botMarkSpot() {
+    const bestBoard = minmax(gameBoard, 5, true)[1];
+
+    const move = getMove(bestBoard);
+
+    gameBoard[move[0]][move[1]] = 'O';
 
     displayBoard();
 
     const result = checkWin();
 
-    if (result === 1) {
+    if (result === 2) {
       if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} wins!`;
       else labelTitle.innerHTML = `${name2} wins!`;
       endGame();
-    } if (result === 2) {
+    } if (result === 1) {
       labelTitle.innerHTML = 'It\'s a tie';
       endGame();
     }
@@ -83,28 +164,19 @@ const gameControler = ((() => {
 
     const result = checkWin();
 
-    if (result === 1) {
+    if (result === 2) {
       if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} wins!`;
       else labelTitle.innerHTML = `${name2} wins!`;
       endGame();
       return;
-    } if (result === 2) {
+    } if (result === 1) {
       labelTitle.innerHTML = 'It\'s a tie';
       endGame();
       return;
     }
 
     if (isSinglePlayer) {
-      let i = 0;
-      let j = 0;
-
-      while (!botMarkSpot(i, j)) {
-        i += 1;
-        if (i === 3) {
-          i = 0;
-          j += 1;
-        }
-      }
+      botMarkSpot();
     } else {
       isPlayerOneTurn = !isPlayerOneTurn;
       if (isPlayerOneTurn) labelTitle.innerHTML = `${name1} turn`;
@@ -118,6 +190,8 @@ const gameControler = ((() => {
     for (let i = 0; i < divGameBoard.length; i += 1) {
       divGameBoard[i].disabled = false;
     }
+
+    isPlayerOneTurn = true;
 
     displayBoard();
   }
