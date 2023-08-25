@@ -18,7 +18,7 @@ const gameControler = ((() => {
     }
   }
 
-  function checkBotWin(board) {
+  function evaluateBotPosition(board) {
     let emptySpaces = 0;
 
     for (let i = 0; i < board.length; i += 1) {
@@ -30,7 +30,7 @@ const gameControler = ((() => {
     }
 
     if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[1][1] === 'O') return 2;
-    if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && board[1][1] === '0') return 2;
+    if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && board[1][1] === 'O') return 2;
 
     for (let i = 0; i < board.length; i += 1) {
       for (let j = 0; j < board[i].length; j += 1) {
@@ -43,23 +43,23 @@ const gameControler = ((() => {
     return 0;
   }
 
-  function checkWin() {
+  function checkWin(board = gameBoard) {
     let emptySpaces = 0;
 
-    for (let i = 0; i < gameBoard.length; i += 1) {
-      if (gameBoard[i][0] === gameBoard[i][1] && gameBoard[i][1] === gameBoard[i][2] && gameBoard[i][0] !== '') return 2;
+    for (let i = 0; i < board.length; i += 1) {
+      if (board[i][0] === board[i][1] && board[i][1] === board[i][2] && board[i][0] !== '') return 2;
     }
 
-    for (let j = 0; j < gameBoard.length; j += 1) {
-      if (gameBoard[0][j] === gameBoard[1][j] && gameBoard[1][j] === gameBoard[2][j] && gameBoard[0][j] !== '') return 2;
+    for (let j = 0; j < board.length; j += 1) {
+      if (board[0][j] === board[1][j] && board[1][j] === board[2][j] && board[0][j] !== '') return 2;
     }
 
-    if (gameBoard[0][0] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][2] && gameBoard[1][1] !== '') return 2;
-    if (gameBoard[0][2] === gameBoard[1][1] && gameBoard[1][1] === gameBoard[2][0] && gameBoard[1][1] !== '') return 2;
+    if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[1][1] !== '') return 2;
+    if (board[0][2] === board[1][1] && board[1][1] === board[2][0] && board[1][1] !== '') return 2;
 
-    for (let i = 0; i < gameBoard.length; i += 1) {
-      for (let j = 0; j < gameBoard[i].length; j += 1) {
-        if (gameBoard[i][j] === '') emptySpaces += 1;
+    for (let i = 0; i < board.length; i += 1) {
+      for (let j = 0; j < board[i].length; j += 1) {
+        if (board[i][j] === '') emptySpaces += 1;
       }
     }
 
@@ -92,30 +92,38 @@ const gameControler = ((() => {
   function minmax(board, depth, maximizingPlayer) {
     const possibleMoves = getPossibleMoves(board);
 
-    if (depth === 0 || possibleMoves.length === 0) {
-      return [checkBotWin(board), board];
+    if (depth === 0 || possibleMoves.length === 0 || checkWin(board)) {
+      return [evaluateBotPosition(board), board];
     }
 
     if (maximizingPlayer) {
       let value = -1;
+      let bestMove;
 
       for (let i = 0; i < possibleMoves.length; i += 1) {
         const tmp = minmax(possibleMoves[i], depth - 1, false)[0];
-        if (value < tmp) value = tmp;
+        if (value < tmp) {
+          value = tmp;
+          bestMove = possibleMoves[i];
+        }
       }
 
-      return [value, board];
+      return [value, bestMove];
     }
 
     let value = 3;
+    let bestMove;
 
     for (let i = 0; i < possibleMoves.length; i += 1) {
       const tmp = minmax(possibleMoves[i], depth - 1, true)[0];
 
-      if (value > tmp) value = tmp;
+      if (value > tmp) {
+        value = tmp;
+        bestMove = possibleMoves[i];
+      }
     }
 
-    return [value, board];
+    return [value, bestMove];
   }
 
   function getMove(board) {
@@ -125,7 +133,7 @@ const gameControler = ((() => {
       }
     }
 
-    return [0, 0];
+    return [-1, -1];
   }
 
   function botMarkSpot() {
